@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-Application<nitflex-web-bbdd-rest>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "es.codeurjc.web.nitflex.Application",
+            "projectName": "nitflex-web-bbdd-rest",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
