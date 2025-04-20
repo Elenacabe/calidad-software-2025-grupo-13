@@ -84,5 +84,36 @@ public void updateFilmWithoutImage_then_changesSaved_and_favoritesAreKept() {
     user.getFavoriteFilms().add(film);
     film.getUsersThatLiked().add(user);
     userRepository.save(user);
- }
+    }
+
+
+    @Test
+@Transactional
+public void whenDeleteExistingFilm_thenFilmIsRemovedFromRepositoryAndFavorites() {
+
+    String title = "Test Film";
+    String synopsis = "A film for testing purposes";
+    int releaseYear = 2025;
+    String ageRating = "+18";
+
+    CreateFilmRequest filmRequest = new CreateFilmRequest(title, synopsis, releaseYear, ageRating);
+    FilmDTO savedFilm = filmService.save(filmRequest);
+
+    User user = new User("Test User", "testuser@example.com");
+    user = userRepository.save(user);
+
+    Film film = filmRepository.findById(savedFilm.id()).orElseThrow();
+    user.getFavoriteFilms().add(film);
+    film.getUsersThatLiked().add(user);
+    userRepository.save(user);
+
+    filmService.delete(savedFilm.id());
+
+    assertTrue(filmRepository.findById(savedFilm.id()).isEmpty(), "Film should be removed from the repository");
+
+    User updatedUser = userRepository.findById(user.getId()).orElseThrow();
+    assertTrue(updatedUser.getFavoriteFilms().isEmpty(), "Film should be removed from the user's favorites");
+
+    System.out.println("TEST PASSED! Film deleted: ID=" + savedFilm.id() + ", Title=" + savedFilm.title());
+    }
 }
