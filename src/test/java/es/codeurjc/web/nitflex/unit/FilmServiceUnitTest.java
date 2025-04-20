@@ -6,6 +6,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
@@ -17,6 +21,7 @@ import es.codeurjc.web.nitflex.model.Film;
 import es.codeurjc.web.nitflex.repository.FilmRepository;
 import es.codeurjc.web.nitflex.repository.UserRepository;
 import es.codeurjc.web.nitflex.service.FilmService;
+import es.codeurjc.web.nitflex.service.exceptions.FilmNotFoundException;
 import es.codeurjc.web.nitflex.utils.ImageUtils;
 
 public class FilmServiceUnitTest {
@@ -85,5 +90,21 @@ public class FilmServiceUnitTest {
                           ", " + result.synopsis() + 
                           ", " + result.releaseYear() + 
                           ", Only" + result.ageRating() + " -                                                 ");
+    }
+
+    @Test
+    public void whenDeleteNonExistentFilm_thenThrowsException() {
+    Long nonExistentFilmId = 999L;
+
+    doThrow(new FilmNotFoundException(nonExistentFilmId))
+        .when(filmRepository).findById(nonExistentFilmId);
+
+    Exception exception = assertThrows(FilmNotFoundException.class, () -> {
+        filmService.delete(nonExistentFilmId);
+    });
+
+    assertEquals("Film not found with id: " + nonExistentFilmId, exception.getMessage());
+
+    verify(filmRepository).findById(nonExistentFilmId);
     }
 }
