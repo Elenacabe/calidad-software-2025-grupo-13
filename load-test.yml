@@ -1,7 +1,7 @@
 config:
-  target: "http://localhost:8080/api" # Base URL for the API
+  target: "http://localhost:8080" 
   payload:
-    path: "films.csv" # CSV file with film data
+    path: "films.csv"
     fields:
       - "title"
       - "synopsis"
@@ -9,43 +9,52 @@ config:
       - "ageRating"
   http:
     pool: 8 # Limit to 8 simultaneous connections
-  ensure:
-    maxResponseTime: 100 # Local: 100ms
-    maxErrors: 0 # No errors allowed
 
 environments:
   local:
     phases:
       - duration: 40
         arrivalRate: 5
+    ensure:
+      p99: 100 
+      maxErrorRate: 0 # No errors allowed
+    variables:
+      environment: "local"
+  
   staging:
     phases:
       - name: "Warm up"
         duration: 40
         arrivalRate: 10
         rampTo: 50
-      - pause: 30
+      - duration: 30
+        arrivalRate: 0 # Pause between phases
       - name: "Load test"
         duration: 300
         arrivalRate: 50
+    ensure:
+      p95: 300 
+      maxErrorRate: 0 
+    variables:
+      environment: "staging"
 
 scenarios:
   - name: "Retrieve all films and get details of the first one"
     weight: 70
     flow:
       - get:
-          url: "/films"
+          url: "/api/films/"
           capture:
             - json: "$[0].id"
               as: "first_film_id"
       - get:
-          url: "/films/{{ first_film_id }}"
+          url: "/api/films/{{ first_film_id }}"
 
   - name: "Create a film and retrieve it"
     weight: 20
     flow:
       - post:
-          url: "/films"
+          url: "/api/films/"
           json:
             title: "{{ title }}"
             synopsis: "{{ synopsis }}"
@@ -55,13 +64,13 @@ scenarios:
             - json: "$.id"
               as: "created_film_id"
       - get:
-          url: "/films/{{ created_film_id }}"
+          url: "/api/films/{{ created_film_id }}"
 
   - name: "Create, retrieve, and delete a film"
     weight: 10
     flow:
       - post:
-          url: "/films"
+          url: "/api/films/"
           json:
             title: "{{ title }} - To Delete"
             synopsis: "{{ synopsis }}"
@@ -71,11 +80,11 @@ scenarios:
             - json: "$.id"
               as: "film_to_delete_id"
       - get:
-          url: "/films/{{ film_to_delete_id }}"
+          url: "/api/films/{{ film_to_delete_id }}"
       - delete:
-          url: "/films/{{ film_to_delete_id }}"
+          url: "/api/films/{{ film_to_delete_id }}"
       - get:
-          url: "/films"
+          url: "/api/films/"
           expect:
             - notHasProperty: "$[*].id"
               value: "{{ film_to_delete_id }}"

@@ -1,0 +1,321 @@
+{
+  "aggregate": {
+    "counters": {
+      "vusers.created_by_name.Retrieve all films and get details of the first one": 1,
+      "vusers.created": 1,
+      "http.requests": 2,
+      "http.codes.200": 2,
+      "http.responses": 2,
+      "http.downloaded_bytes": 4012,
+      "plugins.metrics-by-endpoint./api/films/.codes.200": 1,
+      "plugins.metrics-by-endpoint./api/films/{{ first_film_id }}.codes.200": 1,
+      "vusers.failed": 0,
+      "vusers.completed": 1
+    },
+    "rates": {
+      "http.request_rate": 2
+    },
+    "firstCounterAt": 1745269109895,
+    "firstHistogramAt": 1745269109935,
+    "lastCounterAt": 1745269109951,
+    "lastHistogramAt": 1745269109951,
+    "firstMetricAt": 1745269109895,
+    "lastMetricAt": 1745269109951,
+    "period": 1745269100000,
+    "summaries": {
+      "http.response_time": {
+        "min": 8,
+        "max": 14,
+        "count": 2,
+        "mean": 11,
+        "p50": 7.9,
+        "median": 7.9,
+        "p75": 7.9,
+        "p90": 7.9,
+        "p95": 7.9,
+        "p99": 7.9,
+        "p999": 7.9
+      },
+      "http.response_time.2xx": {
+        "min": 8,
+        "max": 14,
+        "count": 2,
+        "mean": 11,
+        "p50": 7.9,
+        "median": 7.9,
+        "p75": 7.9,
+        "p90": 7.9,
+        "p95": 7.9,
+        "p99": 7.9,
+        "p999": 7.9
+      },
+      "plugins.metrics-by-endpoint.response_time./api/films/": {
+        "min": 14,
+        "max": 14,
+        "count": 1,
+        "mean": 14,
+        "p50": 13.9,
+        "median": 13.9,
+        "p75": 13.9,
+        "p90": 13.9,
+        "p95": 13.9,
+        "p99": 13.9,
+        "p999": 13.9
+      },
+      "plugins.metrics-by-endpoint.response_time./api/films/{{ first_film_id }}": {
+        "min": 8,
+        "max": 8,
+        "count": 1,
+        "mean": 8,
+        "p50": 7.9,
+        "median": 7.9,
+        "p75": 7.9,
+        "p90": 7.9,
+        "p95": 7.9,
+        "p99": 7.9,
+        "p999": 7.9
+      },
+      "vusers.session_length": {
+        "min": 56.4,
+        "max": 56.4,
+        "count": 1,
+        "mean": 56.4,
+        "p50": 56.3,
+        "median": 56.3,
+        "p75": 56.3,
+        "p90": 56.3,
+        "p95": 56.3,
+        "p99": 56.3,
+        "p999": 56.3
+      }
+    },
+    "histograms": {
+      "http.response_time": {
+        "min": 8,
+        "max": 14,
+        "count": 2,
+        "mean": 11,
+        "p50": 7.9,
+        "median": 7.9,
+        "p75": 7.9,
+        "p90": 7.9,
+        "p95": 7.9,
+        "p99": 7.9,
+        "p999": 7.9
+      },
+      "http.response_time.2xx": {
+        "min": 8,
+        "max": 14,
+        "count": 2,
+        "mean": 11,
+        "p50": 7.9,
+        "median": 7.9,
+        "p75": 7.9,
+        "p90": 7.9,
+        "p95": 7.9,
+        "p99": 7.9,
+        "p999": 7.9
+      },
+      "plugins.metrics-by-endpoint.response_time./api/films/": {
+        "min": 14,
+        "max": 14,
+        "count": 1,
+        "mean": 14,
+        "p50": 13.9,
+        "median": 13.9,
+        "p75": 13.9,
+        "p90": 13.9,
+        "p95": 13.9,
+        "p99": 13.9,
+        "p999": 13.9
+      },
+      "plugins.metrics-by-endpoint.response_time./api/films/{{ first_film_id }}": {
+        "min": 8,
+        "max": 8,
+        "count": 1,
+        "mean": 8,
+        "p50": 7.9,
+        "median": 7.9,
+        "p75": 7.9,
+        "p90": 7.9,
+        "p95": 7.9,
+        "p99": 7.9,
+        "p999": 7.9
+      },
+      "vusers.session_length": {
+        "min": 56.4,
+        "max": 56.4,
+        "count": 1,
+        "mean": 56.4,
+        "p50": 56.3,
+        "median": 56.3,
+        "p75": 56.3,
+        "p90": 56.3,
+        "p95": 56.3,
+        "p99": 56.3,
+        "p999": 56.3
+      }
+    }
+  },
+  "intermediate": [
+    {
+      "counters": {
+        "vusers.created_by_name.Retrieve all films and get details of the first one": 1,
+        "vusers.created": 1,
+        "http.requests": 2,
+        "http.codes.200": 2,
+        "http.responses": 2,
+        "http.downloaded_bytes": 4012,
+        "plugins.metrics-by-endpoint./api/films/.codes.200": 1,
+        "plugins.metrics-by-endpoint./api/films/{{ first_film_id }}.codes.200": 1,
+        "vusers.failed": 0,
+        "vusers.completed": 1
+      },
+      "rates": {
+        "http.request_rate": 2
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1745269109895,
+      "firstHistogramAt": 1745269109935,
+      "lastCounterAt": 1745269109951,
+      "lastHistogramAt": 1745269109951,
+      "firstMetricAt": 1745269109895,
+      "lastMetricAt": 1745269109951,
+      "period": "1745269100000",
+      "summaries": {
+        "http.response_time": {
+          "min": 8,
+          "max": 14,
+          "count": 2,
+          "mean": 11,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 7.9,
+          "p90": 7.9,
+          "p95": 7.9,
+          "p99": 7.9,
+          "p999": 7.9
+        },
+        "http.response_time.2xx": {
+          "min": 8,
+          "max": 14,
+          "count": 2,
+          "mean": 11,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 7.9,
+          "p90": 7.9,
+          "p95": 7.9,
+          "p99": 7.9,
+          "p999": 7.9
+        },
+        "plugins.metrics-by-endpoint.response_time./api/films/": {
+          "min": 14,
+          "max": 14,
+          "count": 1,
+          "mean": 14,
+          "p50": 13.9,
+          "median": 13.9,
+          "p75": 13.9,
+          "p90": 13.9,
+          "p95": 13.9,
+          "p99": 13.9,
+          "p999": 13.9
+        },
+        "plugins.metrics-by-endpoint.response_time./api/films/{{ first_film_id }}": {
+          "min": 8,
+          "max": 8,
+          "count": 1,
+          "mean": 8,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 7.9,
+          "p90": 7.9,
+          "p95": 7.9,
+          "p99": 7.9,
+          "p999": 7.9
+        },
+        "vusers.session_length": {
+          "min": 56.4,
+          "max": 56.4,
+          "count": 1,
+          "mean": 56.4,
+          "p50": 56.3,
+          "median": 56.3,
+          "p75": 56.3,
+          "p90": 56.3,
+          "p95": 56.3,
+          "p99": 56.3,
+          "p999": 56.3
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 8,
+          "max": 14,
+          "count": 2,
+          "mean": 11,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 7.9,
+          "p90": 7.9,
+          "p95": 7.9,
+          "p99": 7.9,
+          "p999": 7.9
+        },
+        "http.response_time.2xx": {
+          "min": 8,
+          "max": 14,
+          "count": 2,
+          "mean": 11,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 7.9,
+          "p90": 7.9,
+          "p95": 7.9,
+          "p99": 7.9,
+          "p999": 7.9
+        },
+        "plugins.metrics-by-endpoint.response_time./api/films/": {
+          "min": 14,
+          "max": 14,
+          "count": 1,
+          "mean": 14,
+          "p50": 13.9,
+          "median": 13.9,
+          "p75": 13.9,
+          "p90": 13.9,
+          "p95": 13.9,
+          "p99": 13.9,
+          "p999": 13.9
+        },
+        "plugins.metrics-by-endpoint.response_time./api/films/{{ first_film_id }}": {
+          "min": 8,
+          "max": 8,
+          "count": 1,
+          "mean": 8,
+          "p50": 7.9,
+          "median": 7.9,
+          "p75": 7.9,
+          "p90": 7.9,
+          "p95": 7.9,
+          "p99": 7.9,
+          "p999": 7.9
+        },
+        "vusers.session_length": {
+          "min": 56.4,
+          "max": 56.4,
+          "count": 1,
+          "mean": 56.4,
+          "p50": 56.3,
+          "median": 56.3,
+          "p75": 56.3,
+          "p90": 56.3,
+          "p95": 56.3,
+          "p99": 56.3,
+          "p999": 56.3
+        }
+      }
+    }
+  ]
+}
