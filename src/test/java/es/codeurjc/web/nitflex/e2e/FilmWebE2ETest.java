@@ -64,6 +64,61 @@ public class FilmWebE2ETest {
         }
     }
 
+
+    @Test
+    public void whenCreateFilmWithoutTitle_thenErrorMessageIsShownAndFilmNotInList() {
+
+        String synopsis = "A film without a title";
+        String releaseYear = "2024";
+        String ageRating = "+12";
+
+        try {
+ 
+            driver.get("http://localhost:" + port + "/");
+
+            // Click on "New film" button 
+            WebElement newFilmButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("create-film")));
+            newFilmButton.click();
+
+            // Fill the form without a title
+            WebElement synopsisInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("synopsis")));
+            synopsisInput.sendKeys(synopsis);
+
+            WebElement yearInput = driver.findElement(By.name("releaseYear"));
+            yearInput.clear();
+            yearInput.sendKeys(releaseYear);
+
+            driver.findElement(By.cssSelector("select[name='ageRating'] option[value='" + ageRating + "']")).click();
+
+            // Submit the form
+            WebElement submitButton = driver.findElement(By.id("Save"));
+            submitButton.click();
+
+            // Wait for the error message to appear
+            WebElement errorMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("error-list")));
+            assertTrue(errorMessage.isDisplayed(), "Error message should be displayed");
+
+            // Verify the error message contains the expected text
+            String errorText = errorMessage.getText();
+            assertTrue(errorText.contains("The title is empty"), "Error message should indicate that the title is empty");
+
+            //Home page
+            driver.get("http://localhost:" + port + "/");
+
+            // Verify the film is not in the list
+            boolean isFilmInList = driver.findElements(
+                By.xpath("//a[contains(@class, 'film-title') and contains(text(), '" + synopsis + "')]")
+            ).size() > 0;
+            assertFalse(isFilmInList, "Film without title should not appear in the list");
+
+            System.out.println("E2E TEST PASSED! Film without title was not created and error message was shown.");
+        } catch (Exception e) {
+            System.err.println("Error in test: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
     @Test
     public void whenCreateFilmAndDelete_thenFilmDisappears() {
         // Create a unique title to avoid conflicts
