@@ -1,11 +1,9 @@
-name: Workflow 4 - System Tests
+name: Workflow 4 - System Tests (Nightly)
 
 on:
-  push:
-    branches: [ main ]
-    paths-ignore:
-      - '.github/workflows/**'
-      - 'README.md'
+  schedule:
+    - cron: '0 3 * * *'  
+  workflow_dispatch:      
 
 jobs:
   system-tests:
@@ -23,7 +21,7 @@ jobs:
 
       - name: Run system tests
         run: |
-         mvn -Dtest=**.*E2ETest,**.*RestAssuredTest test
+          mvn -Dtest=**.*E2ETest,**.*RestAssuredTest test
 
       - name: Upload system test reports
         uses: actions/upload-artifact@v4
