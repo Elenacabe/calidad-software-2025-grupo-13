@@ -1,0 +1,104 @@
+name: Workflow 3 - Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '.github/workflows/**'
+      - 'README.md'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    name: Build Docker image and push to Docker Hub
+
+    steps:
+      # Clone the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Set up Java for Maven build
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      # Extract version from pom.xml
+      - name: Get project version
+        id: project-version
+        run: |
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | tr -d '\n')
+          echo "version=$VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      # Build the application JAR
+      - name: Build project with Maven
+        run: mvn clean package -DskipTests
+
+      # Log in to Docker Hub
+      - name: Docker Hub login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      # Build Docker image from Dockerfile
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/nitflex:${{ steps.project-version.outputs.version }} .
+
+      # Push Docker image to Docker Hub
+      - name: Push Docker image
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/nitflex:${{ steps.project-version.outputs.version }}
+
+      # ---------------------------------- Azure deployment temporarily disabled
+      # - name: Azure CLI login
+      #   uses: azure/login@v1
+      #   with:
+      #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
+      #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+      #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # - name: Remove previous container if exists
+      #   run: |
+      #     az container delete \
+      #       --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+      #       --name nitflex-production \
+      #       --yes || true
+
+      # - name: Deploy new container to Azure
+      #   run: |
+      #     az container create \
+      #       --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+      #       --name nitflex-production \
+      #       --image ${{ secrets.DOCKER_USERNAME }}/nitflex:${{ steps.project-version.outputs.version }} \
+      #       --registry-login-server index.docker.io \
+      #       --registry-username ${{ secrets.DOCKER_USERNAME }} \
+      #       --registry-password ${{ secrets.DOCKER_TOKEN }} \
+      #       --dns-name-label nitflex-production \
+      #       --ports 8080 \
+      #       --os-type Linux \
+      #       --cpu 1 \
+      #       --memory 1.5
+
+      # - name: Get Azure container URL
+      #   id: container-url
+      #   run: |
+      #     FQDN=$(az container show \
+      #       --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+      #       --name nitflex-production \
+      #       --query "ipAddress.fqdn" -o tsv)
+      #     echo "Container URL: http://$FQDN:8080"
+      #     echo "fqdn=$FQDN" >> $GITHUB_OUTPUT
+
+      # - name: Smoke Test with Artillery
+      #   run: |
+      #     npm install -g artillery
+      #     artillery run src/test/java/es/codeurjc/web/nitflex/artillery/smoke-test.yml

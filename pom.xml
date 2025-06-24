@@ -20,6 +20,8 @@
 		<selenium.version>4.28.1</selenium.version>
 		<rest-assured.version>5.5.1</rest-assured.version>
 		<org.mapstruct.version>1.6.3</org.mapstruct.version>
+		<docker.username>${env.DOCKER_USERNAME}</docker.username>
+
 	</properties>
 
 	<dependencies>
@@ -144,6 +146,16 @@
 					</excludes>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<image>
+					<name>${docker.username}/nitflex</name>
+					</image>
+				</configuration>
+			</plugin>
+
 		</plugins>
 	</build>
 
