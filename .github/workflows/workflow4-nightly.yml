@@ -1,0 +1,32 @@
+name: Workflow 4 - System Tests
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '.github/workflows/**'
+      - 'README.md'
+
+jobs:
+  system-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Run system tests
+        run: |
+         mvn -Dtest=**.*E2ETest,**.*RestAssuredTest test
+
+      - name: Upload system test reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: system-test-reports
+          path: target/surefire-reports/
