@@ -1,3 +1,5 @@
+     name: Workflow 3 - Production Deployment
+
       # Azure CLI login
       - name: Azure CLI login
         uses: azure/login@v1
