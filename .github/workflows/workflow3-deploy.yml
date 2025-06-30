@@ -1,6 +1,22 @@
-     name: Workflow 3 - Production Deployment
+name: Workflow 3 - Production Deployment
 
-      # Azure CLI login
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Extract project version
+        id: project-version
+        run: echo "version=1.0.0" >> $GITHUB_OUTPUT
+
       - name: Azure CLI login
         uses: azure/login@v1
         with:
@@ -8,7 +24,6 @@
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      # Delete previous container if exists
       - name: Remove previous container if exists
         run: |
           az container delete \
@@ -16,7 +31,6 @@
             --name nitflex-production \
             --yes || true
 
-      # Deploy new container to Azure
       - name: Deploy new container to Azure
         run: |
           az container create \
@@ -32,7 +46,6 @@
             --cpu 1 \
             --memory 1.5
 
-      # Get Azure container public FQDN
       - name: Get Azure container URL
         id: container-url
         run: |
@@ -42,7 +55,6 @@
             --query "ipAddress.fqdn" -o tsv)
           echo "fqdn=$FQDN" >> $GITHUB_OUTPUT
 
-      # Load test with Artillery
       - name: Run Load Test with Artillery
         run: |
           npm install -g artillery
