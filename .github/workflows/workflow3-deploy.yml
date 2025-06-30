@@ -36,7 +36,7 @@ jobs:
           az container create \
             --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
             --name nitflex-production \
-            --image ${{ secrets.DOCKER_USERNAME }}/nitflex:${{ steps.project-version.outputs.version }} \
+            --image ${{ secrets.DOCKER_USERNAME }}/nitflex:latest \
             --registry-login-server index.docker.io \
             --registry-username ${{ secrets.DOCKER_USERNAME }} \
             --registry-password ${{ secrets.DOCKER_TOKEN }} \
