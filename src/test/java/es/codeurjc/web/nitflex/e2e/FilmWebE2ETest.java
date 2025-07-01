@@ -38,24 +38,26 @@ public class FilmWebE2ETest {
     @Autowired
     private UserComponent userComponent;
 
-    @BeforeEach
-    public void setup() {
-        // Set up test data - create a user if needed
-        if (userRepository.count() == 0) {
-            User user = new User();
-            user.setName("testUser");
-            user.setEmail("test@example.com");
-            userRepository.save(user);
-        }
-        
-        // Configure Chrome options
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--remote-allow-origins=*");
-        
-        // Initialize Chrome driver
-        driver = new ChromeDriver(options);
-        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+@BeforeEach
+public void setup() {
+    if (userRepository.count() == 0) {
+        User user = new User();
+        user.setName("testUser");
+        user.setEmail("test@example.com");
+        userRepository.save(user);
     }
+
+    ChromeOptions options = new ChromeOptions();
+    options.addArguments("--headless=new");
+    options.addArguments("--no-sandbox");
+    options.addArguments("--disable-dev-shm-usage");
+    options.addArguments("--remote-allow-origins=*");
+    options.addArguments("--user-data-dir=/tmp/unique-chrome-profile"); // carpeta temporal única
+
+    driver = new ChromeDriver(options);
+    wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+}
+
 
     @AfterEach
     public void teardown() {
