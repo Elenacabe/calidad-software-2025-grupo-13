@@ -52,7 +52,9 @@ public void setup() {
     options.addArguments("--no-sandbox");
     options.addArguments("--disable-dev-shm-usage");
     options.addArguments("--remote-allow-origins=*");
-    options.addArguments("--user-data-dir=/tmp/unique-chrome-profile"); // carpeta temporal única
+    String userDataDir = "/tmp/chrome-profile-" + System.currentTimeMillis();
+    options.addArguments("--user-data-dir=" + userDataDir);
+
 
     driver = new ChromeDriver(options);
     wait = new WebDriverWait(driver, Duration.ofSeconds(10));
