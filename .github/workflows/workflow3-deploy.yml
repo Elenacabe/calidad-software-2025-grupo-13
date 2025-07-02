@@ -1,4 +1,4 @@
-name: Continuous Deployment - Run Azure Login with OIDC
+name: Workflow 3- Deploy
 
 on:
   workflow_dispatch:
@@ -37,7 +37,10 @@ jobs:
         run: mvn test
 
       - name: Generate Docker image
-        run: mvn spring-boot:build-image -DskipTests -Dspring-boot.build-image.imageName=${{ secrets.DOCKER_USERNAME }}/nitflex:${{ steps.version.outputs.VERSION }}
+        env:
+          DOCKER_USER: ${{ secrets.DOCKER_USERNAME }}
+          VERSION: ${{ steps.version.outputs.VERSION }}
+        run: mvn spring-boot:build-image -DskipTests -Dspring-boot.build-image.imageName=${DOCKER_USER}/nitflex:${VERSION}
 
       - name: Login to DockerHub
         run: docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_TOKEN }}"
@@ -87,9 +90,7 @@ jobs:
           URL=https://nitflexproduction-${{ secrets.DOCKER_USERNAME }}.westeurope.azurecontainer.io:8080/
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" $URL)
           if [ "$STATUS" -ne 200 ]; then
-            echo "Smoke test fail"
+            echo "FAIL"
             exit 1
           fi
-          echo " Smoke pass!"
-
-
+          echo "SMOKE PASS"
