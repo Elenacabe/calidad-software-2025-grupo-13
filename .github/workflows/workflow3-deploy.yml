@@ -37,16 +37,12 @@ jobs:
         run: mvn test
 
       - name: Generate Docker image
-        env:
-          DOCKER_USER: ${{ secrets.DOCKER_USERNAME }}
-          VERSION: ${{ steps.version.outputs.VERSION }}
-        run: mvn spring-boot:build-image -DskipTests -Dspring-boot.build-image.imageName=${DOCKER_USER}/nitflex:${VERSION}
-
+        run: mvn spring-boot:build-image -DskipTests -Dspring-boot.build-image.imageName=${{ secrets.DOCKERHUB_USERNAME }}/posts:latest
       - name: Login to DockerHub
-        run: docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_TOKEN }}"
-
+        run: docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}" 
       - name: Push image to DockerHub
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/nitflex:${{ steps.version.outputs.VERSION }}
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/posts:latest
+        
 
   deploy:
     runs-on: ubuntu-latest
