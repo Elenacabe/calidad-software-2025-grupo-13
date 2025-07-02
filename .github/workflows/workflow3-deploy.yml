@@ -37,7 +37,7 @@ jobs:
         run: mvn test
 
       - name: Generate Docker image
-        run: docker build -t ${DOCKER_USER}/nitflex:${VERSION}
+        run: mvn spring-boot:build-image -DskipTests -Dspring-boot.build-image.imageName=${DOCKER_USERNAME}/nitflex:${VERSION}
       - name: Login to DockerHub
         run: docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_TOKEN }}" 
       - name: Push image to DockerHub
