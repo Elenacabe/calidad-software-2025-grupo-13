@@ -1,7 +1,5 @@
 name: Continuous Deployment - Run Azure Login with OIDC
 
-name: Continuous Deployment - Run Azure Login with OIDC
-
 on:
   workflow_dispatch:
 
