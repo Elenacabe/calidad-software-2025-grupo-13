@@ -41,7 +41,7 @@ jobs:
       - name: Login to DockerHub
         run: docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_TOKEN }}" 
       - name: Push image to DockerHub
-        run: docker push ${{ secrets.DOCKERHUB_NAME }}/posts:latest
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/posts:latest
         
 
   deploy:
