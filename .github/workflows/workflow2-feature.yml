@@ -7,12 +7,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  run-tests:
+    test:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up JDK
         uses: actions/setup-java@v4
@@ -20,13 +19,9 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Cache Maven packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven
+      - name: Run unit
+        run: mvn test
+      
+      - name: Run integration+E2E
+        run: mvn verify
 
-      - name: Run unit, integration and system tests
-        run: mvn clean verify

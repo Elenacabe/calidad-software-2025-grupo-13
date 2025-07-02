@@ -51,6 +51,7 @@ public class FilmWebE2ETest {
         // Configure Chrome options
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--remote-allow-origins=*");
+        options.addArguments("--headless");
         
         // Initialize Chrome driver
         driver = new ChromeDriver(options);
