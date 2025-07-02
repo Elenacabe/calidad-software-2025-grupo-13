@@ -1,35 +1,36 @@
-name: Workflow 1 - Unit & Integration Tests
+name: Workflow 1 - Unit and Integration Tests
 
 on:
   push:
     branches-ignore:
       - main
-  pull_request:
-    branches-ignore:
-      - main
+    paths-ignore:
+      - '**.md'
+      - '.github/workflows/**'
   workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
           distribution: 'temurin'
+          java-version: '21'
 
-      - name: Cache Maven packages
-        uses: actions/cache@v3
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
         with:
           path: ~/.m2
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven
+          restore-keys: ${{ runner.os }}-maven
 
-      - name: Run unit and integration tests
-        run: mvn clean verify
+      - name: Run Unit Tests
+        run: mvn test -Dtest=*UnitTest
+
+      - name: Run Integration Tests
+        run: mvn test -Dtest=*IntegrationTest
