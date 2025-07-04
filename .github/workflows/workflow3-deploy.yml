@@ -34,6 +34,9 @@ jobs:
 
       - name: Run tests
         run: mvn test
+      - name: Package application
+        run: mvn clean package -DskipTests
+
 
       - name: Log in to DockerHub
         uses: docker/login-action@v2
