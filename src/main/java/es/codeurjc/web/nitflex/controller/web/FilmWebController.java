@@ -100,6 +100,7 @@ public class FilmWebController {
         model.addAttribute("film", film);
         model.addAttribute("ageRatings", AgeRating.values());
         return "filmForm";
+
     }
 
     FilmDTO newFilm = null;
