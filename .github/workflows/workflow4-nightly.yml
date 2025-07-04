@@ -111,16 +111,24 @@ jobs:
       - name: Wait for container to be ready
         run: sleep 45
 
-      - name: Run smoke test
+      - name: Run smoke test with retries
         run: |
           URL=http://nitflexproduction-elenacabe.spaincentral.azurecontainer.io:8080/
           echo "Trying to reach $URL"
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" $URL)
-          if [ "$STATUS" -ne 200 ]; then
-            echo "FAIL: HTTP status $STATUS"
-            exit 1
-          fi
-          echo "SMOKE PASS: HTTP status $STATUS"
+
+          for i in {1..12}; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" $URL || echo "000")
+            echo "Attempt $i: HTTP status $STATUS"
+            if [ "$STATUS" -eq 200 ]; then
+              echo "✅ SMOKE PASS: Service is up with status $STATUS"
+              exit 0
+            fi
+            echo "Waiting 5 seconds before retry..."
+            sleep 5
+          done
+
+          echo "❌ FAIL: Service did not return 200 OK after retries"
+          exit 1
 
       - name: Load Test with Artillery
         run: |
