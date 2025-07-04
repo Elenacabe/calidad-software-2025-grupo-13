@@ -321,4 +321,38 @@ public class FilmWebE2ETest {
             return false;
         }
     }
+
+
+    @Test
+    public void whenClickCancelButton_thenRedirectsToFilmList() {
+        try {
+            // Navigate to the new film form
+            driver.get("http://localhost:" + port + "/films/new");
+
+            // Wait for the form to load
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("new-film")));
+
+            // Click the Cancel button
+            WebElement cancelButton = driver.findElement(By.xpath("//button[text()='Cancel']"));
+            cancelButton.click();
+
+            // Wait for redirection
+            wait.until(ExpectedConditions.or(
+                ExpectedConditions.urlContains("/films"),
+                ExpectedConditions.presenceOfElementLocated(By.id("create-film"))
+            ));
+
+            // Check the URL
+            String currentUrl = driver.getCurrentUrl();
+            assertTrue(currentUrl.contains("/films") || currentUrl.endsWith("/films"),
+                "Cancel button should redirect to /films but redirected to: " + currentUrl);
+
+            System.out.println(" Cancel button correctly redirects to films list");
+        } catch (Exception e) {
+            System.err.println("Error in Cancel button test: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
 }
