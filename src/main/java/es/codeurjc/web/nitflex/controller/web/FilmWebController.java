@@ -93,19 +93,29 @@ public class FilmWebController {
 	@PostMapping("/films/new")
 	public String newFilmProcess(CreateFilmRequest film, MultipartFile imageField, Model model) {
 
-		FilmDTO newFilm = null;
+		 if (film.releaseYear() < 1895) {
+        model.addAttribute("error", true);
+        model.addAttribute("errors", List.of("The release year must be 1895 or later"));
+        model.addAttribute("action", "/films/new");
+        model.addAttribute("film", film);
+        model.addAttribute("ageRatings", AgeRating.values());
+        return "filmForm";
+    }
 
-		try{
-			newFilm = filmService.save(film, imageField);
-		}catch(IllegalArgumentException e){
-			model.addAttribute("error", true);
-			model.addAttribute("errors", List.of(e.getMessage()));
-			model.addAttribute("action", "/films/new");
-			model.addAttribute("film", film);
-			return "filmForm";
-		}
-		
-		return "redirect:/films/" + newFilm.id();
+    FilmDTO newFilm = null;
+
+    try {
+        newFilm = filmService.save(film, imageField);
+    } catch (IllegalArgumentException e) {
+        model.addAttribute("error", true);
+        model.addAttribute("errors", List.of(e.getMessage()));
+        model.addAttribute("action", "/films/new");
+        model.addAttribute("film", film);
+        model.addAttribute("ageRatings", AgeRating.values());
+        return "filmForm";
+    }
+
+    return "redirect:/films/" + newFilm.id();
 	}
 	
 	@GetMapping("/films/{id}/edit")
