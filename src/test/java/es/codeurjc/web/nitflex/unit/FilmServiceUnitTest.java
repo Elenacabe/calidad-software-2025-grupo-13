@@ -48,6 +48,30 @@ public class FilmServiceUnitTest {
     public void setup() {
         MockitoAnnotations.openMocks(this);
     }
+    @Test
+    public void whenSaveFilmWithInvalidYear_thenThrowsExceptionAndDoesNotSave() {
+        // Arrange
+        String title = "Invalid Year Movie";
+        String synopsis = "A movie that shouldn't be allowed";
+        int invalidYear = 1800; // Before 1895
+        String ageRating = "+18";
+
+        CreateFilmRequest filmRequest = new CreateFilmRequest(title, synopsis, invalidYear, ageRating);
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            filmService.save(filmRequest);
+        });
+
+        // Assert the exception message
+        assertEquals("The year must be 1895 or later", exception.getMessage());
+
+        // Ensure that no attempt was made to save the film
+        verify(filmRepository, never()).save(any(Film.class));
+
+        // Log
+        System.out.println("- Invalid year test: Exception correctly thrown for year " + invalidYear + " -");
+    }
 
     @Test
     public void whenSaveFilmWithValidTitle_thenFilmIsSavedInRepository() {

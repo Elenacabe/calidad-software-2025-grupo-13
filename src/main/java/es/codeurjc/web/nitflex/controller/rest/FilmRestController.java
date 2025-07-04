@@ -55,8 +55,11 @@ public class FilmRestController {
 	@PostMapping("/")
 	@ResponseStatus(HttpStatus.CREATED)
 	public FilmDTO createFilm(@RequestBody CreateFilmRequest film) {
-		return filmService.save(film);
-	}
+    if (film.releaseYear() < 1895) {
+        throw new IllegalArgumentException("The release year must be 1895 or later");
+    }
+    return filmService.save(film);
+}
 
 	@PutMapping("/{id}")
 	public ResponseEntity<FilmDTO> updateFilm(@PathVariable long id, @RequestBody FilmSimpleDTO updatedFilm) {
