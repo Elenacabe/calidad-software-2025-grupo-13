@@ -66,6 +66,11 @@ public class FilmService {
 		if (film.title() == null || film.title().isEmpty()) {
 			throw new IllegalArgumentException("The title is empty");
 		}
+		
+		if (film.releaseYear() < 1895) {
+			throw new IllegalArgumentException("The year must be 1895 or later");
+		}
+
 		Film newFilm = filmMapper.toDomain(film);
 		newFilm.setPosterFile(imageField);
 		return filmMapper.toDTO(filmRepository.save(newFilm));

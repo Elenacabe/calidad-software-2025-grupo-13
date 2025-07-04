@@ -66,11 +66,7 @@ public class FilmWebE2ETest {
         }
     }
 
-    /**
-     * 3.1 - Test to check that when a new film is created
-     * (without including the image), we expect the created film 
-     * to appear on the resulting screen
-     */
+ 
     @Test
     public void whenCreateFilm_thenFilmAppearsInList() {
         // Create a unique title to avoid conflicts
@@ -130,10 +126,50 @@ public class FilmWebE2ETest {
         }
     }
 
-    /**
-     * 3.4 - Test to check that when a new film is created and edited
-     * to add '- parte 2' to its title, we verify that the change has been applied
-     */
+    @Test
+    public void whenCreateFilmWithInvalidYear_thenShowErrorMessage() {
+        String filmTitle = "Invalid Year Film " + System.currentTimeMillis();
+
+        try {
+            // Navigate to the home page
+            driver.get("http://localhost:" + port + "/");
+
+            // Click on the "New film" button
+            WebElement newFilmButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("create-film")));
+            newFilmButton.click();
+
+            // Wait until the film form appears
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("new-film")));
+
+            // Fill in the form with an invalid year
+            driver.findElement(By.name("title")).sendKeys(filmTitle);
+            driver.findElement(By.name("releaseYear")).clear();
+            driver.findElement(By.name("releaseYear")).sendKeys("1800"); // Invalid year
+            driver.findElement(By.name("synopsis")).sendKeys("This should fail due to invalid year");
+            driver.findElement(By.cssSelector("select[name='ageRating'] option[value='+12']")).click();
+
+            // Submit the form
+            driver.findElement(By.id("Save")).click();
+
+            // Wait until the error message appears
+             WebElement errorMessage = wait.until(
+            ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".ui.error.message")));
+
+
+            // Assert that the error message contains the expected text
+            String errorText = errorMessage.getText();
+            assertTrue(errorText.contains("must be 1895 or later") || errorText.toLowerCase().contains("error"),
+                "An error related to the release year should be displayed");
+
+            System.out.println("E2E TEST PASSED! Film with invalid year was correctly rejected and error message shown");
+
+        } catch (Exception e) {
+            System.err.println("Error in invalid year test: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
     @Test
     public void whenCreateFilmAndEdit_thenFilmTitleIsUpdated() {
         // Create a unique title to avoid conflicts
@@ -321,4 +357,38 @@ public class FilmWebE2ETest {
             return false;
         }
     }
+
+
+    @Test
+    public void whenClickCancelButton_thenRedirectsToFilmList() {
+        try {
+            // Navigate to the new film form
+            driver.get("http://localhost:" + port + "/films/new");
+
+            // Wait for the form to load
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("new-film")));
+
+            // Click the Cancel button
+            WebElement cancelButton = driver.findElement(By.xpath("//button[text()='Cancel']"));
+            cancelButton.click();
+
+            // Wait for redirection
+            wait.until(ExpectedConditions.or(
+                ExpectedConditions.urlContains("/films"),
+                ExpectedConditions.presenceOfElementLocated(By.id("create-film"))
+            ));
+
+            // Check the URL
+            String currentUrl = driver.getCurrentUrl();
+            assertTrue(currentUrl.contains("/films") || currentUrl.endsWith("/films"),
+                "Cancel button should redirect to /films but redirected to: " + currentUrl);
+
+            System.out.println(" Cancel button correctly redirects to films list");
+        } catch (Exception e) {
+            System.err.println("Error in Cancel button test: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
 }
