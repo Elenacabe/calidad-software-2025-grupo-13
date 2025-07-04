@@ -90,15 +90,13 @@ jobs:
             --memory 1.5 \
             --restart-policy OnFailure
 
-      - name: Wait for container to start
-        run: sleep 30
-
       - name: Run smoke test
         run: |
-          URL=https://nitflexproduction-${{ secrets.DOCKER_USERNAME }}.westeurope.azurecontainer.io:8080/
+          URL=http://nitflexproduction-elenacabe.spaincentral.azurecontainer.io:8080/
+          echo "Trying to reach $URL"
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" $URL)
           if [ "$STATUS" -ne 200 ]; then
-            echo "FAIL"
+            echo "FAIL: HTTP status $STATUS"
             exit 1
           fi
-          echo "SMOKE PASS"
+          echo "SMOKE PASS: HTTP status $STATUS"

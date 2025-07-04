@@ -1,0 +1,149 @@
+name: Workflow 4 - Nightly Tests and Staging Deployment
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Todos los días a medianoche UTC
+  push:
+    branches:
+      - main
+    paths:
+      - src/**
+      - pom.xml
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  multibrowser:
+    name: System test - Multi-browser
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser: [chrome, firefox]
+        os: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - name: Run system test with Selenium
+        run: |
+          mvn test -Psystem-tests -Dbrowser=${{ matrix.browser }}
+
+  loadtesting:
+    name: Load Testing and Staging Deployment
+    runs-on: ubuntu-latest
+    outputs:
+      date: ${{ steps.setdate.outputs.DATE }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Run Unit Tests
+        run: mvn test
+
+      - name: Run Integration Tests
+        run: mvn verify -Pintegration-tests
+
+      - name: Run System Tests (except smoke)
+        run: mvn verify -Psystem-tests
+
+      - name: Extract date
+        id: setdate
+        run: echo "DATE=$(date +%F)" >> "$GITHUB_OUTPUT"
+
+      - name: Build Docker Image with commit hash
+        run: |
+          HASH=$(git rev-parse --short HEAD)
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/nitflex:$HASH .
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Push Docker Image
+        run: |
+          HASH=$(git rev-parse --short HEAD)
+          docker push ${{ secrets.DOCKER_USERNAME }}/nitflex:$HASH
+
+      - name: Azure login with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Delete previous staging container (if exists)
+        run: |
+          az container delete \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --name nitflex-staging \
+            --yes || true
+
+      - name: Deploy to Staging
+        run: |
+          HASH=$(git rev-parse --short HEAD)
+          az container create \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --name nitflex-staging \
+            --image ${{ secrets.DOCKER_USERNAME }}/nitflex:$HASH \
+            --registry-login-server index.docker.io \
+            --registry-username ${{ secrets.DOCKER_USERNAME }} \
+            --registry-password ${{ secrets.DOCKER_TOKEN }} \
+            --dns-name-label nitflexstaging-${{ secrets.DOCKER_USERNAME }} \
+            --ports 8080 \
+            --os-type Linux \
+            --cpu 1 \
+            --memory 1.5 \
+            --restart-policy OnFailure
+
+      - name: Wait for container to be ready
+        run: sleep 45
+
+      - name: Run smoke test
+        run: |
+          URL=http://nitflexproduction-elenacabe.spaincentral.azurecontainer.io:8080/
+          echo "Trying to reach $URL"
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" $URL)
+          if [ "$STATUS" -ne 200 ]; then
+            echo "FAIL: HTTP status $STATUS"
+            exit 1
+          fi
+          echo "SMOKE PASS: HTTP status $STATUS"
+
+      - name: Load Test with Artillery
+        run: |
+          npm install -g artillery
+          artillery run load-test.yml
+
+  nightly-tag:
+    name: Publish nightly image
+    runs-on: ubuntu-latest
+    needs: [multibrowser, loadtesting]
+    if: ${{ success() }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Tag and Push nightly Docker image
+        run: |
+          HASH=$(git rev-parse --short HEAD)
+          DATE=$(date +%F)
+          docker pull ${{ secrets.DOCKER_USERNAME }}/nitflex:$HASH
+          docker tag ${{ secrets.DOCKER_USERNAME }}/nitflex:$HASH ${{ secrets.DOCKER_USERNAME }}/nitflex:nightly-$DATE
+          docker push ${{ secrets.DOCKER_USERNAME }}/nitflex:nightly-$DATE
