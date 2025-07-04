@@ -56,7 +56,9 @@ public class FilmServiceUnitTest {
         int invalidYear = 1800; // Before 1895
         String ageRating = "+18";
 
+
         CreateFilmRequest filmRequest = new CreateFilmRequest(title, synopsis, invalidYear, ageRating);
+        when(filmMapper.toDomain(filmRequest)).thenReturn(new Film());
 
         // Act & Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {

@@ -152,8 +152,9 @@ public class FilmWebE2ETest {
             driver.findElement(By.id("Save")).click();
 
             // Wait until the error message appears
-            WebElement errorMessage = wait.until(
-                ExpectedConditions.visibilityOfElementLocated(By.className("error")));
+             WebElement errorMessage = wait.until(
+            ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".ui.error.message")));
+
 
             // Assert that the error message contains the expected text
             String errorText = errorMessage.getText();
